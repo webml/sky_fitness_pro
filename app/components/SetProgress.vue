@@ -24,7 +24,6 @@
               :disabled="progress[index] === exercise.quantity"
               @input="onInput(index, exercise.quantity, $event.target.value)"
             />
-            <!-- <div class="input-hint">Максимум {{ exercise.quantity }}</div> -->
           </div>
         </div>
 

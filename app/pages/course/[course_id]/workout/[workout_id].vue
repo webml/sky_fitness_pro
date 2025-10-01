@@ -23,21 +23,27 @@
         />
       </div>
 
-      <BaseButton @click="isModalVisible = true">
+      <BaseButton @click="isProgressModalVisible = true">
         Обновить свой прогресс
       </BaseButton>
     </div>
 
     <div v-else>
-      <h3>В этом уроке упражнений нет</h3>
+      <BaseButton @click="() => updateProgress([])">
+        Отметить выполненным
+      </BaseButton>
     </div>
 
+    <!-- Модалка ввода прогресса -->
     <SetProgress
-      v-model:visible="isModalVisible"
+      v-model:visible="isProgressModalVisible"
       :exercises="exercises"
       :initialProgress="currentProgress"
       @save="updateProgress"
     />
+
+    <!-- Модалка "Сохранено" -->
+    <ProgressSaved v-model:visible="isSavedModalVisible" />
   </div>
 
   <div v-else class="loading">Загрузка...</div>
@@ -50,7 +56,9 @@ import { useWorkoutsStore } from "@/stores/workouts";
 
 const route = useRoute();
 const workoutsStore = useWorkoutsStore();
-const isModalVisible = ref(false);
+
+const isProgressModalVisible = ref(false);
+const isSavedModalVisible = ref(false);
 
 const workoutId = route.params.workout_id;
 const courseId = route.params.course_id;
@@ -72,9 +80,16 @@ const loadWorkout = async () => {
   }
 };
 
-const updateProgress = (newProgress) => {
+const updateProgress = async (newProgress) => {
   try {
-    workoutsStore.saveWorkoutProgress(courseId, workoutId, newProgress);
+    await workoutsStore.saveWorkoutProgress(courseId, workoutId, newProgress);
+
+    // Закрываем модалку ввода
+    isProgressModalVisible.value = false;
+    // Показываем модалку "Сохранено"
+    isSavedModalVisible.value = true;
+
+    setTimeout(() => (isSavedModalVisible.value = false), 2000);
   } catch (e) {
     console.error("Ошибка обновления прогресса:", e);
   }
