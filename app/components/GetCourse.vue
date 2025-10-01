@@ -77,6 +77,7 @@ const handleCourseToggle = async () => {
     } else {
       await coursesStore.addCourse(props.course_id);
     }
+    await userStore.fetchUserData();
   } catch (error) {
     console.error("Ошибка:", error);
     alert(error.message);

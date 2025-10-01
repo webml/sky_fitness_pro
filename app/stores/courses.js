@@ -171,7 +171,17 @@ export const useCoursesStore = defineStore("courses", {
 
         const course = this._cache.get(courseId);
         if (course) {
-          course.workouts = response;
+          course.workouts = response.sort((a, b) => {
+            const numA = parseInt(a.name.match(/\d+/)?.[0] ?? "0", 10);
+            const numB = parseInt(b.name.match(/\d+/)?.[0] ?? "0", 10);
+
+            if (numA && numB) {
+              return numA - numB;
+            }
+
+            return a.name.localeCompare(b.name, "ru", { sensitivity: "base" });
+          });
+
           this._addToCache(course);
         }
 

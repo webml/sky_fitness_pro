@@ -4,7 +4,6 @@
       <div class="modal">
         <h3>Мой прогресс</h3>
 
-        <!-- Скроллимый контейнер только для упражнений -->
         <div class="modal-content">
           <div
             v-for="(exercise, index) in exercises"
@@ -19,13 +18,16 @@
               v-model.number="progress[index]"
               type="number"
               min="0"
+              :max="exercise.quantity - progress[index]"
               step="1"
               required
+              :disabled="progress[index] === exercise.quantity"
+              @input="onInput(index, exercise.quantity, $event.target.value)"
             />
+            <!-- <div class="input-hint">Максимум {{ exercise.quantity }}</div> -->
           </div>
         </div>
 
-        <!-- Футер с кнопкой -->
         <div class="modal-footer">
           <BaseButton type="button" @click="saveProgress" full-width>
             Сохранить
@@ -43,14 +45,22 @@ const props = defineProps({
   exercises: { type: Array, required: true },
   initialProgress: { type: Array, default: () => [] },
   visible: Boolean,
-  onSave: { type: Function, required: true },
 });
 
-const emit = defineEmits(["update:visible"]);
+const emit = defineEmits(["update:visible", "save"]);
 
 const progress = ref([]);
 
-// Инициализация прогресса
+// clamp по количеству из упражнения
+const clamp = (val, max) => {
+  const n = Number(val);
+  if (!Number.isFinite(n)) return 0;
+  if (n < 0) return 0;
+  if (n > max) return max;
+  return Math.round(n);
+};
+
+// при изменении входных данных
 watch(
   () => [props.initialProgress, props.exercises],
   ([newProgress, newExercises]) => {
@@ -58,8 +68,8 @@ watch(
     const updated = new Array(length).fill(0);
 
     for (let i = 0; i < length; i++) {
-      // подставляем существующее значение, либо 0
-      updated[i] = newProgress?.[i] ?? 0;
+      const max = newExercises?.[i]?.quantity ?? 100;
+      updated[i] = clamp(newProgress?.[i] ?? 0, max);
     }
 
     progress.value = updated;
@@ -67,13 +77,15 @@ watch(
   { immediate: true, deep: true }
 );
 
-const saveProgress = () => {
-  // валидация: пустые поля и отрицательные числа → 0
-  const validated = progress.value.map((val) =>
-    Number.isInteger(val) && val > 0 ? val : 0
-  );
+const onInput = (index, max, value) => {
+  progress.value[index] = clamp(value, max);
+};
 
-  props.onSave(validated);
+const saveProgress = () => {
+  const validated = progress.value.map((val, i) =>
+    clamp(val, props.exercises[i]?.quantity ?? 100)
+  );
+  emit("save", validated);
   emit("update:visible", false);
 };
 </script>

@@ -96,7 +96,7 @@ export const useWorkoutsStore = defineStore("workouts", {
 
         // сортировка по названию
         courseWorkouts = (courseWorkouts || []).sort((a, b) =>
-          a.name.localeCompare(b.name, "ru", { sensitivity: "base" })
+          a.name.localeCompare(b.name)
         );
 
         const validWorkoutIds = new Set(courseWorkouts.map((w) => w._id));
