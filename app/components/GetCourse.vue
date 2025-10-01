@@ -65,7 +65,7 @@ const isProcessing = ref(false);
 const isAuthenticated = computed(() => userStore.isAuthenticated);
 
 const isCourseAdded = computed(() =>
-  userStore.currentUser?.user?.selectedCourses?.includes(props.course_id)
+  coursesStore.userCourses.some((c) => c._id === props.course_id)
 );
 
 const handleCourseToggle = async () => {
