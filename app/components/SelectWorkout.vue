@@ -20,9 +20,6 @@
                 class="checkbox"
                 :class="{ checked: isWorkoutCompleted(workout._id) }"
               ></span>
-              <span v-if="isWorkoutCompleted(workout._id)" class="check"
-                >✔</span
-              >
             </div>
             <div>
               <span>{{ workout.name }}</span>
@@ -140,8 +137,8 @@ h3 {
 }
 
 .checkbox.checked {
-  background: #4caf50;
-  border-color: #4caf50;
+  background: hsla(75, 83%, 56%, 1);
+  border-color: hsla(75, 83%, 56%, 1);
 }
 
 .checkbox.checked::after {

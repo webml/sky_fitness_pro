@@ -193,7 +193,7 @@ export const useWorkoutsStore = defineStore("workouts", {
 
     // Утилиты
     isWorkoutCompleted(workoutId) {
-      return this.workoutProgress[workoutId]?.workoutCompleted || false;
+      return this.workoutsCompleted[workoutId] || false;
     },
     getExerciseProgress(workoutId, exerciseIndex) {
       return this.workoutProgress[workoutId]?.progressData[exerciseIndex] || 0;
